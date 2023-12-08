@@ -20,6 +20,26 @@ def get_movies( title: str=None,
                 min_year: int=None,
                 max_year: int=None,
                 db: Session = Depends(get_db)):
+"""
+Retrieve movies based on the provided filters.
+
+Args:
+- title (str, optional): Title of the movie to filter by.
+- rating (float, optional): Rating of the movie to filter by.
+- min_year (int, optional): Minimum release year of the movie to filter by.
+- max_year (int, optional): Maximum release year of the movie to filter by.
+- db (Session): Database session dependency.
+
+Returns:
+- List[models.Movie]: List of movies matching the provided filters.
+
+Raises:
+- No specific exceptions are raised within this function.
+
+Example:
+movies = get_movies(title="The Matrix", min_year=1999, db=session)
+"""
+
     query = db.query(models.Movie)
                     
     if title:
@@ -36,6 +56,23 @@ def get_movies( title: str=None,
 
 @router.get('/movies/{movie_id}', response_model=schemas.Movie)
 def get_movie(movie_id: int, db: Session = Depends(get_db)):
+    """
+    Retrieve a movie by its ID from the database.
+
+    Args:
+        movie_id (int): The ID of the movie to retrieve.
+        db (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Raises:
+        HTTPException: If the movie with the specified ID is not found in the database.
+
+    Returns:
+        models.Movie: The movie retrieved from the database.
+
+    Example:
+        movie = get_movie(123)
+    """
+
     db_movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
@@ -75,6 +112,23 @@ def update_movie(movie_id: int, movie_update: schemas.MovieCreate, db: Session =
 
 @router.delete('/movies/{movie_id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete_movie(movie_id: int, db: Session = Depends(get_db)):
+    """
+    Delete a movie from the database.
+
+    Args:
+        movie_id (int): The ID of the movie to be deleted.
+        db (Session): The database session.
+
+    Raises:
+        HTTPException: If the movie with the given ID is not found in the database.
+
+    Returns:
+        None: Returns None after deleting the movie.
+
+    Example:
+        delete_movie(123, db)
+    """
+
     db_movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
