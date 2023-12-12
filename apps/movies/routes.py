@@ -21,6 +21,7 @@ def get_movies( title: str=None,
                 max_year: int=None,
                 db: Session = Depends(get_db)):
     query = db.query(models.Movie)
+
                     
     if title:
         query = query.filter(models.Movie.title.ilike(f"%{title}%"))
@@ -36,6 +37,7 @@ def get_movies( title: str=None,
 
 @router.get('/movies/{movie_id}', response_model=schemas.Movie)
 def get_movie(movie_id: int, db: Session = Depends(get_db)):
+    
     db_movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
@@ -55,6 +57,7 @@ def create_movie(movie: schemas.MovieCreate, db: Session = Depends(get_db)):
         genre=movie.genre,
         director_id=movie.director_id
     )
+    
     db.add(db_movie)
     db.commit()
     db.refresh(db_movie)
